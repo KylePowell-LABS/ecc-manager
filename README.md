@@ -20,6 +20,16 @@ ECC Manager is a local ECC environment assembler with a Web UI and CLI. It reads
 
 It is designed for local-first agent workflows: preview what will be written, apply only managed files or symlinks, keep a project lock, and run Doctor checks when the project or ECC source changes.
 
+### Why ECC Manager Exists
+
+`everything-claude-code` is powerful, but it can grow into a very large capability library. Loading the whole thing into every project makes agent instructions heavier than necessary and can waste precious context. ECC Manager turns that large library into a project-specific assembly flow: choose the current phase, architecture, stack fragments, and packs, then install only the capabilities the project actually needs.
+
+It also makes the same ECC capability set usable beyond Claude Code. Codex and Google Antigravity have different project file conventions, so ECC Manager adapts commands, skills, agents, rules, and generated instructions into the right local structure for each tool while keeping a shared project lock and Doctor checks.
+
+### Web UI Screenshot
+
+![ECC Manager English Web UI](https://raw.githubusercontent.com/KylePowell-LABS/ecc-manager/main/assets/screenshots/ecc-manager-web-en.png)
+
 ### Features
 
 - Local Web UI bound to `127.0.0.1` by default.
@@ -190,6 +200,16 @@ MIT. See [LICENSE](LICENSE).
 ECC Manager 是一个本地 ECC 环境装配器。它把 `ECC_HOME` 里的 `commands`、`skills`、`agents`、`rules` 按 `phase + architecture + tech-stack fragment + pack` 组合，装配到当前项目的 Claude Code、Codex 和 Antigravity 本地配置里。
 
 第一次使用建议先看完整教程：[ECC Manager 使用文档](docs/USER_GUIDE.md)。
+
+### 为什么要做 ECC Manager
+
+`everything-claude-code` 很强，但当能力库越来越完整时，也会变得非常庞大。如果每个项目都直接加载全量内容，AI 工具需要读取的指令会变重，也更容易占用宝贵的上下文窗口。ECC Manager 的目标是把这套能力库拆成可以按项目装配的模块：根据当前阶段、技术架构、技术栈片段和能力包，只安装这个项目真正需要的部分。
+
+它也不只服务 Claude Code。Codex 和 Google Antigravity 对项目级指令、skills、agents、rules、workflows 的读取方式都不一样，ECC Manager 会把同一套 ECC 能力适配到对应工具的本地结构里，并用项目 lock 和 Doctor 检查保持可追踪、可恢复、可诊断。
+
+### 网站截图
+
+![ECC Manager 中文 Web UI](https://raw.githubusercontent.com/KylePowell-LABS/ecc-manager/main/assets/screenshots/ecc-manager-web-zh-cn.png)
 
 它默认启动一个只监听本机的 Web UI，并自动打开浏览器：
 
