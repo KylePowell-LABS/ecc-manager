@@ -46,4 +46,4 @@ python3 -m twine check dist/*
 
 ## Documentation
 
-`README.md` is bilingual and should keep the `English | 简体中文` jump links working. The detailed Chinese guide lives in `docs/USER_GUIDE.md`.
+`README.md` and `docs/USER_GUIDE.md` are bilingual and should keep the `English | 简体中文` jump links working.

@@ -208,7 +208,7 @@ Build the package:
 python3 -m build
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for the detailed Chinese user guide.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines and [docs/USER_GUIDE.md](docs/USER_GUIDE.md) for the bilingual user guide.
 
 ### License
 

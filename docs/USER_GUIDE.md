@@ -1,4 +1,412 @@
-# ECC Manager 使用文档
+# ECC Manager User Guide
+
+[English](#english) | [简体中文](#简体中文)
+
+## English
+
+This guide is for first-time ECC Manager users. ECC Manager is a local assembler for `everything-claude-code` style capability libraries: it reads your ECC source repository, then installs the needed commands, skills, agents, and rules into the current project based on the phase, architecture, stack fragments, and packs you choose.
+
+Claude Code is enabled by default. Codex and Google Antigravity are optional targets; ECC Manager only generates their files after you explicitly enable them in Settings.
+
+## Who It Is For
+
+ECC Manager is useful if you already use, or plan to use, `everything-claude-code`, especially when:
+
+- You have a large Claude Code commands / skills / agents / rules library, but you do not want every project to load everything.
+- You want to split Claude Code capabilities across projects by phase, architecture, stack, and capability pack.
+- You want the same ECC commands, skills, agents, and rules to work across Claude Code, Codex, and Google Antigravity.
+- You want preview plans, a project lock, and Doctor checks so you can see which files are managed, which dependencies are missing, and which generated files can be restored.
+
+ECC Manager does not replace `everything-claude-code`. It turns a large capability library into smaller project-local configurations and adapts those capabilities to each AI tool's expected file layout.
+
+## 1. Prerequisites
+
+You need two directories:
+
+```text
+ECC_HOME        ECC source repository with commands, skills, agents, and rules
+PROFILE_HOME    ECC Manager profile configuration directory
+```
+
+Default paths:
+
+```text
+ECC_HOME=~/everything-claude-code
+PROFILE_HOME=~/.ecc-manager/profiles
+```
+
+`ECC_HOME` should contain at least:
+
+```text
+commands/
+skills/
+agents/
+rules/
+```
+
+When available, ECC Manager also reads these metadata files to understand versions, component relationships, and command dependencies:
+
+```text
+VERSION
+manifests/install-profiles.json
+manifests/install-modules.json
+manifests/install-components.json
+config/project-stack-mappings.json
+docs/COMMAND-REGISTRY.json
+```
+
+## 2. Install and Start
+
+Install from PyPI:
+
+```bash
+python3 -m pip install ecc-manager
+```
+
+Or install from the repository:
+
+```bash
+python3 -m pip install .
+```
+
+Start the Web UI:
+
+```bash
+ecc-manager
+```
+
+The default URL is:
+
+```text
+http://127.0.0.1:8765
+```
+
+If port `8765` is busy, ECC Manager tries the next available port.
+
+Run directly from the source tree without installing:
+
+```bash
+python3 -m ecc_manager.server
+```
+
+Start without opening a browser:
+
+```bash
+ecc-manager --no-open
+```
+
+Choose a port:
+
+```bash
+ecc-manager --port 8770
+```
+
+## 3. First Web UI Flow
+
+Recommended first run:
+
+1. Open the Web UI.
+2. Select the project directory you want ECC Manager to manage.
+3. Open Settings and confirm `ECC_HOME` and `PROFILE_HOME`.
+4. Choose tool targets in Settings:
+   - Claude Code only: leave Codex and Antigravity disabled.
+   - Codex: enable "Use Codex".
+   - Antigravity: enable "Use Antigravity".
+   - Same project for Codex and Antigravity: enable both.
+5. Return to the main page and choose phase, architecture, stack fragments, and packs.
+6. Preview the plan before applying it.
+7. Apply only after missing sources and target conflicts are resolved.
+8. Run Doctor after applying the plan.
+
+Avoid manually copying files into the project at the beginning. ECC Manager records managed files in the project lock, which makes later updates, removals, and checks much safer.
+
+## 4. Choosing Phases, Architecture, Stack, and Packs
+
+The install plan is calculated from:
+
+```text
+phase + architecture + project-type fragment + pack
+```
+
+Use this mental model:
+
+| Type | Purpose | Examples |
+| --- | --- | --- |
+| phase | Current project phase | init, development, review |
+| architecture | Project architecture | web app, backend, desktop |
+| project-type fragment | Stack fragment | next, postgres, python |
+| pack | Extra capability pack | planning, testing, security |
+
+For a first setup, usually choose:
+
+```text
+1 initial phase
+1 main architecture
+several stack fragments
+packs as needed
+```
+
+When the project changes later, you do not need to start over. Use "add" to append new phases, stack fragments, or packs.
+
+## 5. What Each Tool Target Generates
+
+The same ECC source capability lands in different places for different AI tools. ECC Manager keeps the source consistent and adapts the target layout: you still manage commands, skills, agents, and rules from an ECC source repository such as `everything-claude-code`, while each target receives files it can read.
+
+| ECC source capability | Claude Code | Codex | Google Antigravity |
+| --- | --- | --- | --- |
+| commands | `.claude/commands/` | `AGENTS.md` command index + `.agents/skills/ecc-*` command skill | `.agents/workflows/` workflow Markdown |
+| skills | `.claude/skills/` | `.agents/skills/` | `.agents/skills/` |
+| agents | `.claude/agents/` | `.codex/agents/` custom agent TOML | `.agents/agents.md` |
+| rules | `.claude/rules/` | `.codex/rules/` and managed `AGENTS.md` context | `.agents/rules/` |
+| generated instructions | `CLAUDE.ecc.generated.md` | `AGENTS.ecc.generated.md` | `ANTIGRAVITY.ecc.generated.md` |
+
+### Claude Code
+
+Enabled by default. ECC Manager generates or maintains:
+
+```text
+.claude/
+CLAUDE.ecc.generated.md
+.claude/ecc-lock/profile.json
+```
+
+Claude Code directly uses commands, skills, agents, and rules under `.claude/`.
+
+### Codex
+
+Generated only after you enable "Use Codex" in Settings:
+
+```text
+AGENTS.md
+AGENTS.ecc.generated.md
+.agents/skills/
+.codex/agents/
+```
+
+Codex reads `AGENTS.md`. ECC Manager only updates managed blocks marked with `ecc-manager`; your own content in `AGENTS.md` is preserved.
+
+Codex does not have the exact same slash command file loading model as Claude Code, so ECC commands are indexed in `AGENTS.md` and `AGENTS.ecc.generated.md`. In Codex, you can say:
+
+```text
+Follow the /plan-prd workflow to help me plan this feature.
+```
+
+Codex then follows the project instructions and the corresponding `.agents/skills/ecc-*` command skill.
+
+### Google Antigravity
+
+Generated only after you enable "Use Antigravity" in Settings:
+
+```text
+AGENTS.md
+ANTIGRAVITY.ecc.generated.md
+.agents/agents.md
+.agents/skills/
+.agents/rules/
+.agents/workflows/
+```
+
+Modern Antigravity uses `.agents/...` by default. ECC Manager aggregates ECC agents into `.agents/agents.md` and converts commands into `.agents/workflows/`. The old `.agent/workflows/` path is only detected by Doctor as a legacy leftover; it is not used as a new generated target.
+
+After opening the same project in Antigravity, you can use the generated workflow or ask Antigravity to follow the ECC workflow in the project.
+
+## 6. Recommended Workflows
+
+### New Project Initialization
+
+1. Start `ecc-manager`.
+2. Select the project directory.
+3. Check `ECC_HOME` in Settings.
+4. Choose tool targets.
+5. Choose initial phase, architecture, project-type fragments, and packs.
+6. Preview the plan.
+7. Apply after confirming there are no conflicts.
+8. Run Doctor.
+9. Open the project in Claude Code, Codex, or Antigravity.
+
+### Adding a Stack Later
+
+For example, if the project later adds Postgres, Redis, or a test framework:
+
+1. Select the current project in the Web UI.
+2. Choose the new stack fragment or pack.
+3. Use "add" instead of reinitializing.
+4. Preview the plan.
+5. Apply it.
+6. Run Doctor.
+
+### After Updating the ECC Source Repository
+
+Because each machine may have a different ECC version, after updating ECC:
+
+1. Confirm `ECC_HOME` points to the updated ECC repository.
+2. Open the Web UI.
+3. Check ECC version compatibility.
+4. Run scan or Doctor.
+5. If a command, skill, agent, or rule no longer exists, the preview plan shows missing or degraded capabilities.
+6. New upstream components are not installed blindly. They enter the plan only when your profile, phase, stack, or pack requires them.
+
+ECC Manager is not a "copy everything" tool. It calculates what the current project needs from your project selection and ECC metadata.
+
+## 7. Doctor
+
+Doctor checks project health. It verifies:
+
+```text
+ECC_HOME exists
+PROFILE_HOME exists
+project lock exists
+managed files still exist
+symlinks are not broken
+generated files are not corrupted
+Claude / Codex / Antigravity target files do not conflict
+legacy Antigravity .agent/workflows leftovers
+```
+
+You can open Doctor from the Web UI.
+
+CLI:
+
+```bash
+ecc-use doctor --project /path/to/project
+```
+
+To safely repair recoverable symlinks and generated files:
+
+```bash
+ecc-use doctor --project /path/to/project --fix
+```
+
+Doctor does not casually delete your real project files. If it sees a real file conflict, it reports the problem and asks you to handle it.
+
+## 8. CLI Fallback
+
+The Web UI is the recommended entrypoint. The CLI is useful for automation or troubleshooting.
+
+List profiles:
+
+```bash
+ecc-use list
+```
+
+List phases only:
+
+```bash
+ecc-use list phases
+```
+
+Dry-run initialization:
+
+```bash
+ecc-use init ph-init arch-web-saas-next-postgres --project /path/to/project --dry-run
+```
+
+Apply after reviewing the plan:
+
+```bash
+ecc-use init ph-init arch-web-saas-next-postgres --project /path/to/project
+```
+
+Add capabilities:
+
+```bash
+ecc-use add pack-testing --project /path/to/project
+```
+
+Check status:
+
+```bash
+ecc-use status --project /path/to/project
+```
+
+Remove a profile:
+
+```bash
+ecc-use remove pack-testing --project /path/to/project
+```
+
+## 9. FAQ
+
+### Does ECC Manager replace everything-claude-code?
+
+No. `everything-claude-code` is the capability source. ECC Manager is the local assembler. It reads commands, skills, agents, rules, workflows, and metadata from the ECC source repository, then generates files that Claude Code, Codex, or Google Antigravity can read for the current project.
+
+### Why not copy all commands / skills / agents / rules into every project?
+
+Copying everything makes project AI instructions heavy and brings many unused capabilities into context. The larger the capability library becomes, the more this matters. ECC Manager calculates the needed subset from profiles, phase, architecture, stack, and packs, previews it first, then records the result in the lock.
+
+### What is the difference between Claude Code plugins, Codex skills, and Antigravity workflows?
+
+Claude Code can directly read commands, skills, agents, and rules under `.claude/`. Codex relies more on `AGENTS.md` and repo-scoped skills, so ECC commands are indexed and adapted into `.agents/skills/ecc-*`. Google Antigravity uses `.agents/...`, so ECC commands become workflow Markdown under `.agents/workflows/`.
+
+### Why use a lock and Doctor?
+
+The project lock records what ECC Manager installed, which profile or pack provided it, and which target files are managed. Doctor checks whether those records are still healthy: missing sources, broken symlinks, damaged generated files, legacy Antigravity leftovers, and incomplete command dependencies.
+
+### Do I need to generate Claude Code, Codex, and Antigravity files at the same time?
+
+No. Claude Code is the default. Codex and Antigravity are enabled manually in Settings.
+
+### Why does Codex use AGENTS.md?
+
+`AGENTS.md` is the Codex project instruction entrypoint. ECC Manager maintains a managed block there to tell Codex which ECC commands, skills, and agents are enabled for the project.
+
+### Why does Antigravity use .agents/agents.md and .agents/workflows?
+
+Modern Antigravity uses `.agents/...`. ECC Manager aggregates agent personas into `.agents/agents.md` and generates Antigravity workflows under `.agents/workflows/`. Old `.agent/workflows/` content is only detected as a legacy leftover.
+
+### What if the ECC version changes?
+
+Open the Web UI, check version compatibility, and run Doctor. ECC Manager rescans the current `ECC_HOME` and does not assume everyone has the same ECC version.
+
+### What if a command depends on a skill or agent?
+
+ECC Manager expands dependencies in the preview plan. Missing required dependencies block the apply step; optional dependencies are shown as warnings or degraded capabilities.
+
+### What if a target file already exists?
+
+If ECC Manager generated it before, it can update it. If it is a real file you wrote yourself, the plan marks it as a conflict and blocks the write to avoid overwriting your work.
+
+### Should I edit generated files directly?
+
+Usually no. Avoid editing:
+
+```text
+CLAUDE.ecc.generated.md
+AGENTS.ecc.generated.md
+ANTIGRAVITY.ecc.generated.md
+ecc-manager managed blocks in AGENTS.md
+```
+
+Put your own project instructions in `CLAUDE.md` or in non-managed areas of `AGENTS.md`.
+
+## 10. Safety Boundary
+
+ECC Manager listens on localhost by default:
+
+```text
+127.0.0.1
+```
+
+Web UI write endpoints require a local session token, and the server regenerates plans before applying them so browser-side mutations cannot rewrite target paths.
+
+Avoid:
+
+```bash
+ecc-manager --host 0.0.0.0
+```
+
+Only expose it on a local network if you understand the risk.
+
+## 11. One-Line Flow
+
+For first use, remember:
+
+```text
+start ecc-manager -> choose project -> set ECC_HOME and targets -> choose profiles -> preview plan -> apply -> run Doctor -> use the project in the AI tool
+```
+
+## 简体中文
 
 这份文档面向第一次使用 ECC Manager 的用户。你可以把它理解成一个本地装配器：它读取你的 ECC 仓库，根据你选择的阶段、架构、技术栈和能力包，把需要的 commands、skills、agents、rules 安装到当前项目里。
 
