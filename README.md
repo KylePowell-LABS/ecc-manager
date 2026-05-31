@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/y770509684-max/ecc-manager/actions/workflows/ci.yml"><img src="https://github.com/y770509684-max/ecc-manager/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/KylePowell-LABS/ecc-manager/actions/workflows/ci.yml"><img src="https://github.com/KylePowell-LABS/ecc-manager/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://pypi.org/project/ecc-manager/"><img src="https://img.shields.io/pypi/v/ecc-manager.svg" alt="PyPI"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
 </p>
@@ -40,7 +40,7 @@ python3 -m pip install ecc-manager
 Install from GitHub:
 
 ```bash
-git clone https://github.com/y770509684-max/ecc-manager.git
+git clone https://github.com/KylePowell-LABS/ecc-manager.git
 cd ecc-manager
 python3 -m pip install .
 ```
@@ -216,7 +216,7 @@ python3 -m pip install ecc-manager
 从 GitHub clone 后安装为本机命令：
 
 ```bash
-git clone https://github.com/y770509684-max/ecc-manager.git
+git clone https://github.com/KylePowell-LABS/ecc-manager.git
 cd ecc-manager
 python3 -m pip install .
 ```
