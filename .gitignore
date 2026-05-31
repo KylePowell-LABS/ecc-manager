@@ -1,0 +1,22 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.idea/
+.vscode/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+*.egg-info/
+build/
+dist/
+
+# Local ECC Manager state and generated project artifacts
+.ecc-manager/
+ecc-lock/
+*.ecc.generated.md
+CLAUDE.ecc.generated.md
+AGENTS.ecc.generated.md
+ANTIGRAVITY.ecc.generated.md

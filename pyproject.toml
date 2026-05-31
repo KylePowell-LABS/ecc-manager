@@ -1,0 +1,59 @@
+[project]
+name = "ecc-manager"
+version = "0.1.0"
+description = "Local ECC environment assembler with a Web UI and CLI"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [
+  { name = "ECC Manager contributors" },
+]
+keywords = [
+  "ai-agents",
+  "claude-code",
+  "codex",
+  "developer-tools",
+  "local-first",
+]
+dependencies = []
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Environment :: Web Environment",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: MacOS",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Build Tools",
+  "Topic :: Utilities",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build>=1.2",
+  "twine>=5",
+]
+
+[project.urls]
+Homepage = "https://github.com/y770509684-max/ecc-manager"
+Documentation = "https://github.com/y770509684-max/ecc-manager/blob/main/docs/USER_GUIDE.md"
+Issues = "https://github.com/y770509684-max/ecc-manager/issues"
+Source = "https://github.com/y770509684-max/ecc-manager"
+
+[project.scripts]
+ecc-use = "ecc_manager.cli:main"
+ecc-manager = "ecc_manager.server:main"
+
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["ecc_manager", "ecc_manager.web"]
+
+[tool.setuptools.package-data]
+ecc_manager = ["web/*"]

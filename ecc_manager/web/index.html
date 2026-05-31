@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ECC Manager</title>
+    <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/style.css?v=20260530-target-toggles" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-mark" src="/logo.svg" alt="" aria-hidden="true" />
+          <div>
+            <strong>ECC Manager</strong>
+            <span>本地 ECC 环境装配器</span>
+          </div>
+        </div>
+        <div class="top-project-actions">
+          <button class="status-pill project-select-pill" id="chooseProjectBtn" type="button">
+            <span>项目</span>
+            <strong id="topProject">未选择</strong>
+          </button>
+        </div>
+      </header>
+
+      <aside class="sidebar">
+        <button class="nav-item active" data-page="project">项目</button>
+        <button class="nav-item" data-page="init">初始化</button>
+        <button class="nav-item" data-page="phases">阶段</button>
+        <button class="nav-item" data-page="packs">能力包</button>
+        <button class="nav-item" data-page="assets">能力治理</button>
+        <button class="nav-item" data-page="preview">预览</button>
+        <button class="nav-item" data-page="task">任务结果</button>
+        <button class="nav-item" data-page="status">状态</button>
+        <button class="nav-item" data-page="doctor">Doctor</button>
+        <button class="nav-item" data-page="settings">设置</button>
+      </aside>
+
+      <main class="main">
+        <section class="page active" id="page-project">
+          <input id="projectPath" type="hidden" />
+          <div class="page-head">
+            <div>
+              <h1>项目选择</h1>
+              <p>先确定当前要管理的项目，后面的初始化、添加能力包和检查都围绕这个路径执行。</p>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="project-picker-panel" id="projectPicker">
+              <label class="field-label" for="projectPickerPath">项目目录</label>
+              <div class="project-path-row">
+                <input id="projectPickerPath" type="text" placeholder="/path/to/project" spellcheck="false" />
+                <button class="primary" id="useTypedProjectBtn" type="button">使用此路径</button>
+                <button id="useCwdBtn" type="button">使用启动目录</button>
+              </div>
+              <div class="recent-projects" id="recentProjects"></div>
+            </div>
+            <div class="action-row">
+              <button class="primary" id="scanProjectBtn">扫描项目</button>
+              <button id="initProfilesBtn">初始化 Profiles</button>
+              <button id="openClaudeBtn">打开 CLAUDE.md</button>
+              <button id="openClaudeDirBtn">打开 .claude 目录</button>
+              <button id="openAgentsBtn">打开 AGENTS.md</button>
+              <button id="openCodexDirBtn">打开 .codex 目录</button>
+            </div>
+          </div>
+
+          <div class="grid two" id="projectCards"></div>
+        </section>
+
+        <section class="page" id="page-init">
+          <div class="page-head">
+            <div>
+              <h1>初始化向导</h1>
+              <p>第一次装配项目时，选择初始阶段、一个主技术架构、可选技术栈片段和初始能力包。</p>
+            </div>
+            <div class="button-pair">
+              <button id="previewInitBtn">预览</button>
+              <button class="primary" id="applyInitBtn">初始化</button>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <h2>初始阶段</h2>
+            <div class="choice-grid" id="phaseChoices"></div>
+          </div>
+          <div class="section-block">
+            <h2>主技术架构</h2>
+            <div class="choice-grid" id="architectureTypeChoices"></div>
+          </div>
+          <div class="section-block">
+            <h2>高级：技术栈片段</h2>
+            <div class="choice-grid" id="projectTypeChoices"></div>
+          </div>
+          <div class="section-block">
+            <h2>初始能力包</h2>
+            <div class="choice-grid" id="initPackChoices"></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-phases">
+          <div class="page-head">
+            <div>
+              <h1>阶段演进</h1>
+              <p>项目初始化后，从这里追加新的阶段能力，保留初始阶段记录。</p>
+            </div>
+            <div class="button-pair">
+              <button id="previewStageBtn">预览追加</button>
+              <button class="primary" id="applyStageBtn">追加阶段</button>
+            </div>
+          </div>
+
+          <div class="stage-summary" id="stageSummary"></div>
+          <div class="section-block">
+            <h2>选择下一阶段（可多选）</h2>
+            <div class="choice-grid" id="stagePhaseChoices"></div>
+          </div>
+        </section>
+
+        <section class="page" id="page-packs">
+          <div class="page-head">
+            <div>
+              <h1>能力包市场</h1>
+              <p>按需添加完整能力包，required 依赖会自动处理，optional 项会清楚列出。</p>
+            </div>
+          </div>
+          <div class="list-panel" id="packList"></div>
+        </section>
+
+        <section class="page" id="page-assets">
+          <div class="page-head">
+            <div>
+              <h1>本地 ECC 检测与能力治理</h1>
+              <p>先扫描本地 ECC 原库，再治理阶段、架构、能力包和命令依赖；检测本身不会写入任何文件。</p>
+            </div>
+            <div class="button-pair">
+              <button id="refreshAssetsBtn">检测本地 ECC</button>
+              <button class="primary" id="applySuggestionsBtn">应用选中建议</button>
+            </div>
+          </div>
+          <div id="assetsContent"></div>
+        </section>
+
+        <section class="page" id="page-preview">
+          <div class="page-head">
+            <div>
+              <h1>依赖预览</h1>
+              <p>执行任何改动前，先看清楚将创建、跳过、缺失和不会修改的内容。</p>
+            </div>
+            <div class="button-pair">
+              <button id="backToSelectionBtn">返回修改选择</button>
+              <button class="primary" id="executePlanBtn">执行</button>
+            </div>
+          </div>
+          <div id="previewContent" class="preview-groups"></div>
+        </section>
+
+        <section class="page" id="page-task">
+          <div class="page-head">
+            <div>
+              <h1>任务结果</h1>
+              <p>一次执行是否真正完成、完成标准是否通过，以及下一步应该做什么。</p>
+            </div>
+            <div class="button-pair">
+              <button id="taskToStatusBtn">查看项目状态</button>
+              <button id="taskToDoctorBtn">查看 Doctor</button>
+            </div>
+          </div>
+          <div id="taskResultContent"></div>
+        </section>
+
+        <section class="page" id="page-status">
+          <div class="page-head">
+            <div>
+              <h1>当前项目状态</h1>
+              <p>查看当前项目启用了哪些 ECC 组件，以及每个组件来自哪个 profile 或 pack。</p>
+            </div>
+            <div class="button-pair">
+              <button id="refreshStatusBtn">刷新状态</button>
+              <button id="regenClaudeBtn">重新生成说明</button>
+            </div>
+          </div>
+          <div id="statusContent"></div>
+        </section>
+
+        <section class="page" id="page-doctor">
+          <div class="page-head">
+            <div>
+              <h1>Doctor 检查</h1>
+              <p>把 ECC_HOME、profiles、symlink、lock 和 CLAUDE 引用问题解释清楚。</p>
+            </div>
+            <div class="button-pair">
+              <button id="runDoctorBtn">运行检查</button>
+              <button class="primary" id="fixDoctorBtn">安全修复</button>
+            </div>
+          </div>
+          <div id="doctorContent" class="doctor-list"></div>
+        </section>
+
+        <section class="page" id="page-settings">
+          <div class="page-head">
+            <div>
+              <h1>设置</h1>
+              <p>选择 ECC_HOME 和 PROFILE_HOME；链接模式、覆盖策略和 settings.json 管理保持锁定。</p>
+            </div>
+          </div>
+          <div id="settingsContent" class="settings-grid"></div>
+        </section>
+      </main>
+
+      <aside class="detail">
+        <div class="detail-head">
+          <div>
+            <h2>详情</h2>
+          <p id="detailSubtitle">点击 phase / architecture / project-type / pack 查看依赖</p>
+          </div>
+        </div>
+        <div id="detailContent" class="detail-content"></div>
+      </aside>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <div class="modal-backdrop" id="installConfirmModal" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="installConfirmTitle">
+        <div class="modal-head">
+          <div>
+            <h2 id="installConfirmTitle">确认本次安装</h2>
+            <p id="installConfirmSubtitle">执行前请确认本次会写入的内容。</p>
+          </div>
+          <button class="icon-button" id="installConfirmClose" type="button" aria-label="关闭">×</button>
+        </div>
+        <div class="modal-body" id="installConfirmContent"></div>
+        <div class="modal-actions">
+          <button id="installConfirmCancel" type="button">取消</button>
+          <button class="primary" id="installConfirmApply" type="button">确认执行</button>
+        </div>
+      </div>
+    </div>
+    <script src="/app.js?v=20260531-antigravity-mapping"></script>
+  </body>
+</html>

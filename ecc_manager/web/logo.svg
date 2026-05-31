@@ -1,0 +1,13 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">ECC Manager logo</title>
+  <desc id="desc">A compact app icon with three profile nodes flowing into a blue execution path.</desc>
+  <rect width="128" height="128" rx="30" fill="#111827"/>
+  <rect x="22" y="35" width="84" height="58" rx="16" fill="#172033"/>
+  <path d="M42 46H82C94.15 46 104 53.835 104 63.5C104 73.165 94.15 81 82 81H42" stroke="#3B82F6" stroke-width="14" stroke-linecap="round"/>
+  <path d="M42 64H78" stroke="#93C5FD" stroke-width="14" stroke-linecap="round"/>
+  <path d="M42 82H82" stroke="#34D399" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="42" cy="46" r="8" fill="#DBEAFE"/>
+  <circle cx="42" cy="64" r="8" fill="#BFDBFE"/>
+  <circle cx="42" cy="82" r="8" fill="#A7F3D0"/>
+  <path d="M72 54L84 64L72 74" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
