@@ -4,6 +4,17 @@
 
 ECC Manager 默认只配置 Claude Code。Codex 和 Google Antigravity 都是可选目标，需要你在设置里明确打开后才会生成对应文件。
 
+## 适合谁使用
+
+ECC Manager 适合已经在使用或准备使用 `everything-claude-code` 的开发者，尤其是这些场景：
+
+- 你有一个很大的 Claude Code commands / skills / agents / rules 能力库，但不想每个项目都加载全部内容。
+- 你希望按项目阶段、架构、技术栈和能力包，把 Claude Code 能力拆分到不同项目里。
+- 你想让同一套 ECC commands、skills、agents、rules 同时服务 Claude Code、Codex 和 Google Antigravity（反重力）。
+- 你希望通过预览计划、项目 lock 和 Doctor 检查，知道哪些文件是自动装配的、哪些依赖缺失、哪些生成文件可以恢复。
+
+ECC Manager 不替代 `everything-claude-code`。它负责把这个大型能力库变成更适合单个项目使用的本地配置，并根据不同 AI 工具的读取方式做适配。
+
 ## 1. 你需要先准备什么
 
 使用前需要有两类目录：
@@ -128,6 +139,16 @@ phase + architecture + project-type fragment + pack
 后续项目变化时，不需要重来，可以用“添加”继续追加新的阶段、技术栈或能力包。
 
 ## 5. 选择不同使用目标会生成什么
+
+同一套 ECC 源能力，在不同 AI 工具里的落点不一样。ECC Manager 会尽量保持“来源一致、目标适配”：你仍然从 `everything-claude-code` 这样的 ECC 源仓库管理 commands、skills、agents、rules，但每个目标工具会收到它能读取的文件结构。
+
+| ECC 源能力 | Claude Code | Codex | Google Antigravity（反重力） |
+| --- | --- | --- | --- |
+| commands | `.claude/commands/` | `AGENTS.md` 命令索引 + `.agents/skills/ecc-*` command skill | `.agents/workflows/` workflow Markdown |
+| skills | `.claude/skills/` | `.agents/skills/` | `.agents/skills/` |
+| agents | `.claude/agents/` | `.codex/agents/` custom agent TOML | `.agents/agents.md` |
+| rules | `.claude/rules/` | `.codex/rules/` 和 `AGENTS.md` 托管区 | `.agents/rules/` |
+| 生成说明 | `CLAUDE.ecc.generated.md` | `AGENTS.ecc.generated.md` | `ANTIGRAVITY.ecc.generated.md` |
 
 ### Claude Code
 
@@ -295,6 +316,22 @@ ecc-use remove pack-testing --project /path/to/project
 ```
 
 ## 9. 常见问题
+
+### ECC Manager 会替代 everything-claude-code 吗？
+
+不会。`everything-claude-code` 是能力来源，ECC Manager 是本地装配器。它读取 ECC 源仓库里的 commands、skills、agents、rules、workflows 和元数据，然后根据当前项目需要生成 Claude Code、Codex 或 Google Antigravity 能读取的本地文件。
+
+### 为什么不直接把全部 commands / skills / agents / rules 复制进项目？
+
+全量复制会让项目里的 AI 指令变得很重，也会把很多当前项目用不到的能力带进上下文。能力库越大，这个问题越明显。ECC Manager 的做法是按 profile、阶段、架构、技术栈和 pack 计算需要的部分，先预览，再装配，并用 lock 记录来源。
+
+### Claude Code 插件、Codex skills、Antigravity workflows 有什么区别？
+
+Claude Code 可以直接读取 `.claude/` 下的 commands、skills、agents、rules。Codex 更依赖 `AGENTS.md` 和 repo-scoped skills，所以 ECC commands 会被写入命令索引，并适配成 `.agents/skills/ecc-*`。Google Antigravity（反重力）使用 `.agents/...` 结构，ECC commands 会被转成 `.agents/workflows/` 下的 workflow Markdown。
+
+### 为什么要用 lock 和 Doctor？
+
+项目 lock 用来记录 ECC Manager 已经装配过什么、来自哪个 profile 或 pack、对应哪些目标文件。Doctor 用来检查这些记录是否仍然健康，比如源文件是否缺失、symlink 是否断开、生成文件是否被破坏、旧 Antigravity 目录是否残留、commands 的依赖是否完整。
 
 ### 我是不是需要同时生成 Claude Code、Codex、Antigravity 三套文件？
 

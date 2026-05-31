@@ -11,10 +11,17 @@ authors = [
 ]
 keywords = [
   "ai-agents",
+  "agents",
+  "antigravity",
   "claude-code",
+  "claude-code-tools",
   "codex",
   "developer-tools",
+  "everything-claude-code",
   "local-first",
+  "rules",
+  "skills",
+  "workflows",
 ]
 dependencies = []
 classifiers = [

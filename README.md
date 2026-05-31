@@ -16,15 +16,32 @@
 
 ## English
 
-ECC Manager is a local ECC environment assembler with a Web UI and CLI. It reads commands, skills, agents, rules, runtime files, and profile metadata from `ECC_HOME`, then assembles the right capabilities into a project for Claude Code, Codex, and Google Antigravity.
+ECC Manager is a local capability assembler for `everything-claude-code` workflows. It reads commands, skills, agents, rules, workflows, runtime files, and profile metadata from `ECC_HOME`, then installs only the right capabilities into each project for Claude Code, Codex, and Google Antigravity.
 
 It is designed for local-first agent workflows: preview what will be written, apply only managed files or symlinks, keep a project lock, and run Doctor checks when the project or ECC source changes.
 
 ### Why ECC Manager Exists
 
-`everything-claude-code` is powerful, but it can grow into a very large capability library. Loading the whole thing into every project makes agent instructions heavier than necessary and can waste precious context. ECC Manager turns that large library into a project-specific assembly flow: choose the current phase, architecture, stack fragments, and packs, then install only the capabilities the project actually needs.
+`everything-claude-code` is powerful, but a complete commands / skills / agents / rules library can become too large for everyday project context. Loading the whole capability set into every repo makes agent instructions heavier than necessary, increases noise, and spends context on tools the current project may never use.
 
-It also makes the same ECC capability set usable beyond Claude Code. Codex and Google Antigravity have different project file conventions, so ECC Manager adapts commands, skills, agents, rules, and generated instructions into the right local structure for each tool while keeping a shared project lock and Doctor checks.
+ECC Manager turns that large library into a project-specific assembly flow: choose the current phase, architecture, stack fragments, and packs, then install only the Claude Code, Codex, or Google Antigravity capabilities the project actually needs. The project lock records what was installed, and Doctor checks make updates, missing sources, broken symlinks, generated files, and command readiness visible after the ECC source changes.
+
+### Built for everything-claude-code Workflows
+
+ECC Manager does not replace `everything-claude-code`. It sits next to it as a local Web UI and CLI for splitting, previewing, and applying ECC capabilities per project.
+
+Use it when you want to keep a large ECC source repository in one place while giving each working project a smaller, targeted agent setup. A Next.js SaaS project can receive different commands, skills, agents, rules, and workflows from a Python API project or a code-review-only project, without copying the full upstream library into every repo.
+
+### Tool Compatibility Matrix
+
+| Source capability | Claude Code target | Codex target | Google Antigravity target |
+| --- | --- | --- | --- |
+| ECC commands | `.claude/commands/` symlinks and generated instructions | command index in `AGENTS.md` plus repo-scoped `.agents/skills/ecc-*` command skills | workflow Markdown in `.agents/workflows/` |
+| ECC skills | `.claude/skills/` | `.agents/skills/` | `.agents/skills/` |
+| ECC agents | `.claude/agents/` | Codex custom agent TOML in `.codex/agents/` | aggregated personas in `.agents/agents.md` |
+| ECC rules | `.claude/rules/` | `.codex/rules/` and managed `AGENTS.md` context | `.agents/rules/` |
+| Generated instructions | `CLAUDE.ecc.generated.md` | `AGENTS.ecc.generated.md` and managed `AGENTS.md` blocks | `ANTIGRAVITY.ecc.generated.md` and managed `AGENTS.md` blocks |
+| Health and traceability | project lock plus Doctor checks | project lock plus Doctor checks | project lock plus Doctor checks |
 
 ### Web UI Screenshot
 
@@ -35,7 +52,9 @@ It also makes the same ECC capability set usable beyond Claude Code. Codex and G
 - Local Web UI bound to `127.0.0.1` by default.
 - Profile-based assembly: phase + architecture + stack fragment + pack.
 - Preview-before-apply flow for symlinks, generated files, optional dependencies, and target conflicts.
-- Optional targets for Claude Code, Codex, and Google Antigravity.
+- Claude Code plugin-style commands, skills, agents, rules, and generated instruction files.
+- Codex support through `AGENTS.md`, repo-scoped command skills, Codex custom agents, and rules.
+- Google Antigravity support through `.agents/agents.md`, `.agents/skills/`, `.agents/rules/`, and `.agents/workflows/`.
 - Doctor checks for missing sources, broken symlinks, generated files, legacy artifacts, and command readiness.
 - Bilingual Web UI for English and Simplified Chinese.
 
@@ -197,15 +216,32 @@ MIT. See [LICENSE](LICENSE).
 
 ## 简体中文
 
-ECC Manager 是一个本地 ECC 环境装配器。它把 `ECC_HOME` 里的 `commands`、`skills`、`agents`、`rules` 按 `phase + architecture + tech-stack fragment + pack` 组合，装配到当前项目的 Claude Code、Codex 和 Antigravity 本地配置里。
+ECC Manager 是面向 `everything-claude-code` 工作流的本地能力装配器。它把 `ECC_HOME` 里的 `commands`、`skills`、`agents`、`rules`、`workflows` 和 profile 元数据，按 `phase + architecture + tech-stack fragment + pack` 组合，装配到当前项目的 Claude Code、Codex 和 Google Antigravity（反重力）本地配置里。
 
 第一次使用建议先看完整教程：[ECC Manager 使用文档](docs/USER_GUIDE.md)。
 
 ### 为什么要做 ECC Manager
 
-`everything-claude-code` 很强，但当能力库越来越完整时，也会变得非常庞大。如果每个项目都直接加载全量内容，AI 工具需要读取的指令会变重，也更容易占用宝贵的上下文窗口。ECC Manager 的目标是把这套能力库拆成可以按项目装配的模块：根据当前阶段、技术架构、技术栈片段和能力包，只安装这个项目真正需要的部分。
+`everything-claude-code` 很强，但当 commands、skills、agents、rules 越来越完整时，也会变成一个很大的能力库。如果每个项目都直接加载全量内容，AI 工具要读的指令会变重，噪声会变多，也更容易占用宝贵的上下文窗口。
 
-它也不只服务 Claude Code。Codex 和 Google Antigravity 对项目级指令、skills、agents、rules、workflows 的读取方式都不一样，ECC Manager 会把同一套 ECC 能力适配到对应工具的本地结构里，并用项目 lock 和 Doctor 检查保持可追踪、可恢复、可诊断。
+ECC Manager 的目标是把这套大型能力库拆成可以按项目装配的模块：根据当前阶段、技术架构、技术栈片段和能力包，只安装这个项目真正需要的部分。项目 lock 会记录已经装配的内容，Doctor 会检查源文件缺失、symlink 断开、生成文件异常、旧版残留和 command readiness，让更新和恢复都更可控。
+
+### 它和 everything-claude-code 的关系
+
+ECC Manager 不替代 `everything-claude-code`。它更像是放在大型 ECC 源仓库旁边的本地控制台：负责扫描、切分、预览、装配和检查。
+
+你可以把 `everything-claude-code` 保持为统一的能力来源，然后让不同项目只拿自己需要的 commands、skills、agents、rules 和 workflows。比如 Next.js SaaS、Python API、代码审查项目、初始化项目，可以拥有不同的能力组合，而不是每个项目都复制整套上游库。
+
+### Claude Code / Codex / Antigravity 适配关系
+
+| ECC 源能力 | Claude Code 目标 | Codex 目标 | Google Antigravity（反重力）目标 |
+| --- | --- | --- | --- |
+| ECC commands | `.claude/commands/` symlink 和生成说明 | 写入 `AGENTS.md` 命令索引，并适配成 `.agents/skills/ecc-*` repo-scoped command skills | 转成 `.agents/workflows/` workflow Markdown |
+| ECC skills | `.claude/skills/` | `.agents/skills/` | `.agents/skills/` |
+| ECC agents | `.claude/agents/` | `.codex/agents/` Codex custom agent TOML | 聚合到 `.agents/agents.md` |
+| ECC rules | `.claude/rules/` | `.codex/rules/` 和 `AGENTS.md` 托管区 | `.agents/rules/` |
+| 生成说明 | `CLAUDE.ecc.generated.md` | `AGENTS.ecc.generated.md` 和 `AGENTS.md` 托管区 | `ANTIGRAVITY.ecc.generated.md` 和 `AGENTS.md` 托管区 |
+| 可追踪性 | 项目 lock + Doctor 检查 | 项目 lock + Doctor 检查 | 项目 lock + Doctor 检查 |
 
 ### 网站截图
 
