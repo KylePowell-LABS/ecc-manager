@@ -696,6 +696,7 @@ function uiSentence(value) {
     [/^(.+) blocked，(.+) degraded，(.+) unknown。$/, "$1 blocked, $2 degraded, $3 unknown."],
     [/^(.+) 个 command 缺少必需组件。$/, "$1 commands are missing required components."],
     [/^(.+) 个源组件缺失。$/, "$1 source components are missing."],
+    [/^(.+) 缺失。$/, "$1 is missing."],
     [/^(.+) 个目标已有冲突，执行时会跳过。$/, "$1 targets have conflicts and will be skipped during execution."],
     [/^执行后生成 (.+)。$/, "Generate $1 after execution."],
     [/^已验证 (.+) 个 required symlink。$/, "Verified $1 required symlinks."],
